@@ -94,7 +94,7 @@ fun getItemByBarcode(barcode: String): Item {
 data class OrderItem(var item: Item, var count: Int) {
 
 
-    fun calculatePrice(): Pair<Double,Double> {
+    fun calculatePrice(): Pair<Double, Double> {
         val promotionList = loadPromotions()
         var discount = 0.00;
         if (promotionList?.size > 0) {
@@ -109,10 +109,14 @@ data class OrderItem(var item: Item, var count: Int) {
     }
 }
 
+const val HEADER = "***<没钱赚商店>收据***";
+const val SPLITER = "----------------------";
+const val FOOTER = "**********************";
+
 fun getReceipt(): String {
     val sb = StringBuilder()
-    sb.appendln("""
-***<没钱赚商店>收据***""")
+    sb.appendln()
+    sb.appendln(HEADER)
 
     var totalPrice = 0.00;
     var totalDiscount = 0.00;
@@ -125,14 +129,14 @@ fun getReceipt(): String {
         var itemPriceInfo = orderItem.calculatePrice();
         totalPrice += itemPriceInfo.first;
         totalDiscount += itemPriceInfo.second;
-        val itemReceipt = """名称：${item.name}，数量：${orderItem.count}${item.unit}，单价：${item.price.format() }(元)，小计：${itemPriceInfo.first}(元)"""
+        val itemReceipt = """名称：${item.name}，数量：${orderItem.count}${item.unit}，单价：${item.price.format()}(元)，小计：${itemPriceInfo.first}(元)"""
 
         sb.appendln(itemReceipt);
     }
-    sb.appendln("""----------------------
-总计：${totalPrice.format()}(元)
-节省：${totalDiscount.format()}(元)
-**********************""");
+    sb.appendln(SPLITER);
+    sb.appendln("""总计：${totalPrice.format()}(元)""");
+    sb.appendln("""节省：${totalDiscount.format()}(元)""");
+    sb.appendln(FOOTER);
 
     return sb.toString()
 }
