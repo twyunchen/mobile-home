@@ -1,6 +1,9 @@
 package com.yunchen.m03homework
 
+import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.activity_main.*
@@ -19,6 +22,16 @@ class MainActivity : AppCompatActivity() {
         me.setOnClickListener { switchFragment(TabName.Me) }
         removeAll.setOnClickListener { removeAllFragment() }
         replace.setOnClickListener { replaceFragment() }
+        banner_image.setOnClickListener { openNewActivity() }
+    }
+
+    @SuppressLint("ShowToast")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        val result = data?.extras?.getString("text");
+
+        Toast.makeText(this, result, Toast.LENGTH_SHORT).show()
+
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     private val messageFragment = MessageFragment()
@@ -60,6 +73,12 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction()
             .replace(R.id.content, replacementFragment)
             .commit()
+    }
+
+    private fun openNewActivity() {
+        val intent = Intent(this, SecondActivity::class.java)
+
+        startActivityForResult(intent, 1000)
     }
 
 }
