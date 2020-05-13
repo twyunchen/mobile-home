@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("ShowToast")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        val result = data?.extras?.getString("text");
+        val result = data?.extras?.getString("text")
 
         Toast.makeText(this, result, Toast.LENGTH_SHORT).show()
 
