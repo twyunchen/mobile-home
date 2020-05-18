@@ -71,7 +71,7 @@ class GoodsViewModel : ViewModel() {
     }
 
     fun onNothingClick() {
-        throw IllegalStateException("Please remove nothing component from the showing page")
+
     }
 
     fun onResetClick() {
