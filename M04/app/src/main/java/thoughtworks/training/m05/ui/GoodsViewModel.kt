@@ -70,10 +70,6 @@ class GoodsViewModel : ViewModel() {
         _shoppingCartLD.value = _shoppingCart
     }
 
-    fun onNothingClick() {
-
-    }
-
     fun onResetClick() {
         _shoppingCart.items.clear()
         _shoppingCartLD.value = _shoppingCart
