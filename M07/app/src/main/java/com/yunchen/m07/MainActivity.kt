@@ -1,15 +1,20 @@
 package com.yunchen.m07
 
+import android.os.*
 import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_main.*
 
 const val WAIT_DOWNLOAD = "等待下载"
-const val COMPLETE_DOWNLOAD = "等待下载"
+const val COMPLETE_DOWNLOAD = "下载完成"
+
+const val DOWNLOAD_MSG = 1
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var mainHandler: Handler
+    private lateinit var downloadHandler: Handler
+    private lateinit var handlerThread: HandlerThread
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: DownloadStatusAdapter
 
@@ -27,6 +32,37 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        mainHandler = Handler(Looper.getMainLooper())
+
+        initDownload()
+
+        start.setOnClickListener {
+            startDownload()
+
+        }
+
+        stop.setOnClickListener {
+            if (handlerThread.isAlive) {
+                handlerThread.quit()
+            }
+        }
+
+        restart.setOnClickListener {
+            if (!handlerThread.isAlive) {
+                initDownload()
+            }
+            startDownload()
+        }
+    }
+
+    private fun startDownload() {
+        downloadStatusList.forEach {
+            val message = Message()
+            message.what = DOWNLOAD_MSG
+            message.obj = it
+            downloadHandler.sendMessage(message)
+        }
     }
 
     override fun onStart() {
@@ -38,16 +74,44 @@ class MainActivity : AppCompatActivity() {
 
         viewAdapter.updateDownloadStatusList(downloadStatusList)
 
-        recyclerView =  downloadStatus.apply {
+        recyclerView = downloadStatus.apply {
             setHasFixedSize(true)
 
             layoutManager = viewManager
 
             adapter = viewAdapter
         }
+    }
 
+    private fun initDownload() {
+        handlerThread = HandlerThread("DownloadThread")
 
+        handlerThread.start()
 
+        downloadHandler = object : Handler(handlerThread.looper) {
 
+            override fun handleMessage(msg: Message) {
+                super.handleMessage(msg)
+
+                when (msg.what) {
+                    DOWNLOAD_MSG -> {
+                        val model = msg.obj as DownloadStatusViewModel
+
+                        Thread.sleep(1000)
+
+                        model.status = COMPLETE_DOWNLOAD
+
+                        mainHandler.post {
+                            viewAdapter.updateDownloadStatus(model.url, model.status)
+                        }
+                    }
+                    else -> Unit
+                }
+            }
+        }
     }
 }
+
+
+
+
