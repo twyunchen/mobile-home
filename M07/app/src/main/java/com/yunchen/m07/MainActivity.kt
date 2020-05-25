@@ -39,7 +39,6 @@ class MainActivity : AppCompatActivity() {
 
         start.setOnClickListener {
             startDownload()
-
         }
 
         stop.setOnClickListener {
@@ -80,6 +79,13 @@ class MainActivity : AppCompatActivity() {
             layoutManager = viewManager
 
             adapter = viewAdapter
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (handlerThread.isAlive) {
+            handlerThread.quitSafely()
         }
     }
 
